@@ -9,6 +9,7 @@ require_once __DIR__ . '/header-section.php';
 require_once __DIR__ . '/sidebar-navigator.php';
 require_once __DIR__ . '/hidden-input.php';
 require_once __DIR__ . '/labeled-input.php';
+require_once __DIR__ . '/combo-box.php';
 require_once __DIR__ . '/markdown-view.php';
 require_once __DIR__ . '/../../lib/utils.php';
 
@@ -133,6 +134,8 @@ class AdminMainSection extends RawDataContainer implements Component {
         return new AdminGames($data);
       case 'users':
         return new AdminUsers($data);
+      case 'comments':
+        return new AdminComments($data);
       case 'advanced':
         return new AdminAdvanced($data);
       case 'edit-user':
@@ -527,6 +530,65 @@ class AdminUsers extends RawDataContainer implements Component {
             HtmlElement::create('th', ['Điều khiển']),
           ]),
           HtmlElement::create('tbody', $children),
+        ]),
+      ]),
+    ]);
+  }
+}
+
+class AdminComments extends RawDataContainer implements Component {
+  public function render(): Component {
+    $urlQuery = $this->get('url-query');
+    $field = $urlQuery->getDefault('field', '');
+    $value = $urlQuery->getDefault('value', '');
+
+    return HtmlElement::emmetTop('.content', [
+
+      HtmlElement::emmetBottom('.header-subpage>h1', 'Quản lý bình luận'),
+      HtmlElement::emmetTop('article', [
+        HtmlElement::emmetTop('form.button-container', [
+          'method' => 'POST',
+          'action' => $urlQuery->assign([
+            'type' => 'action',
+            'action' => 'delete-hide-comments',
+          ])->getUrlQuery(),
+          HtmlElement::emmetTop('button', [
+            'type' => 'submit',
+            'name' => 'subaction',
+            'value' => 'delete',
+            'Xóa Bình luận đã chọn',
+          ]),
+          HtmlElement::emmetTop('button', [
+            'type' => 'submit',
+            'name' => 'subaction',
+            'value' => 'hide',
+            'Ẩn Bình luận đã chọn',
+          ]),
+        ]),
+        HtmlElement::emmetTop('form.perspective-control-toolbar', [
+          'method' => 'GET',
+          'action' => '.',
+          new LabeledComboBox([
+            'children' => [
+              'game' => 'Trò chơi',
+              'user' => 'Người dùng',
+            ],
+            'attributes' => [
+              'name' => 'field',
+              'required' => true,
+            ],
+            'label' => 'Hiện thị theo',
+          ]),
+          RequiredLabeledInput::text('value', 'ID'),
+          HtmlElement::create('button', [
+            'type' => 'submit',
+            'Xác nhận',
+          ]),
+          new HiddenInputSet(
+            $urlQuery
+              ->without(['field', 'value'])
+              ->getData()
+          ),
         ]),
       ]),
     ]);

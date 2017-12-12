@@ -106,6 +106,7 @@ function createAdminSubpageList() {
   $namemap = [
     'games' => 'Trò chơi',
     'users' => 'Người dùng',
+    'comments' => 'Bình luận',
     'advanced' => 'Nâng cao',
   ];
 
